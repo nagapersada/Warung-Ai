@@ -1,34 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Warung Pintar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Warung Pintar AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
-<body style="font-family: Arial; padding:20px">
 
-<h1>Warung Pintar</h1>
+<body class="bg-gray-100 font-sans">
 
-<h2>Produk</h2>
-<div id="produk"></div>
+<div class="max-w-6xl mx-auto p-6">
 
-<h2>Tambah Produk</h2>
-<input id="nama" placeholder="Nama"><br>
-<input id="harga" placeholder="Harga"><br>
-<input id="stok" placeholder="Stok"><br>
-<button onclick="tambahProduk()">Tambah</button>
+  <h1 class="text-3xl font-bold mb-6 text-center">Warung Pintar AI</h1>
 
-<h2>Keranjang</h2>
-<div id="keranjang"></div>
-<p id="total">Total: 0</p>
-<button onclick="bayar()">Bayar</button>
+  <div class="grid md:grid-cols-3 gap-6">
 
-<h2>Laporan</h2>
-<div id="laporan"></div>
+    <!-- Produk -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+      <h2 class="text-xl font-semibold mb-4">Produk</h2>
+      <div id="produk"></div>
+    </div>
+
+    <!-- Keranjang -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+      <h2 class="text-xl font-semibold mb-4">Keranjang</h2>
+      <div id="keranjang"></div>
+      <p id="total" class="font-bold mt-4">Total: Rp 0</p>
+      <button onclick="bayar()" class="mt-4 w-full bg-black text-white py-2 rounded-xl">
+        Bayar
+      </button>
+    </div>
+
+    <!-- Tambah Produk -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+      <h2 class="text-xl font-semibold mb-4">Tambah Produk</h2>
+
+      <input id="nama" placeholder="Nama Produk" class="w-full mb-2 p-2 border rounded">
+      <input id="harga" placeholder="Harga" class="w-full mb-2 p-2 border rounded">
+      <input id="stok" placeholder="Stok" class="w-full mb-2 p-2 border rounded">
+
+      <button onclick="tambahProduk()" class="w-full bg-blue-600 text-white py-2 rounded-xl">
+        Simpan
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Laporan -->
+  <div class="bg-white p-4 rounded-2xl shadow mt-6">
+    <h2 class="text-xl font-semibold mb-4">Laporan Transaksi</h2>
+    <div id="laporan"></div>
+  </div>
+
+</div>
 
 <script>
 let produk = [
   {nama:"Mie Instan", harga:3000, stok:20},
-  {nama:"Kopi", harga:2000, stok:30}
+  {nama:"Kopi Sachet", harga:2000, stok:30}
 ];
 
 let keranjang = [];
@@ -36,31 +68,44 @@ let total = 0;
 let laporan = [];
 
 function render() {
-  document.getElementById("produk").innerHTML = "";
+  let pHTML = "";
   produk.forEach((p,i)=>{
-    document.getElementById("produk").innerHTML += 
-      p.nama+" - "+p.harga+" (stok:"+p.stok+") "+
-      "<button onclick='beli("+i+")'>Tambah</button><br>";
+    pHTML += `
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <p class="font-medium">${p.nama}</p>
+          <p class="text-sm text-gray-500">Rp ${p.harga} | stok ${p.stok}</p>
+        </div>
+        <button onclick="beli(${i})" class="bg-green-500 text-white px-3 py-1 rounded">
+          +
+        </button>
+      </div>
+    `;
   });
+  document.getElementById("produk").innerHTML = pHTML;
 
-  document.getElementById("keranjang").innerHTML = "";
+  let kHTML = "";
   keranjang.forEach(k=>{
-    document.getElementById("keranjang").innerHTML += k.nama+"<br>";
+    kHTML += `<p>${k.nama}</p>`;
   });
+  document.getElementById("keranjang").innerHTML = kHTML;
 
-  document.getElementById("total").innerText = "Total: "+total;
+  document.getElementById("total").innerText = "Total: Rp " + total;
 
-  document.getElementById("laporan").innerHTML = "";
+  let lHTML = "";
   laporan.forEach(l=>{
-    document.getElementById("laporan").innerHTML += l+"<br>";
+    lHTML += `<p>${l}</p>`;
   });
+  document.getElementById("laporan").innerHTML = lHTML;
 }
 
 function beli(i){
-  if(produk[i].stok<=0) return;
+  if(produk[i].stok <= 0) return;
+
   produk[i].stok--;
   keranjang.push(produk[i]);
   total += produk[i].harga;
+
   render();
 }
 
@@ -69,14 +114,24 @@ function tambahProduk(){
   let harga = parseInt(document.getElementById("harga").value);
   let stok = parseInt(document.getElementById("stok").value);
 
-  produk.push({nama,harga,stok});
+  if(!nama || !harga || !stok) return;
+
+  produk.push({nama, harga, stok});
+
+  document.getElementById("nama").value = "";
+  document.getElementById("harga").value = "";
+  document.getElementById("stok").value = "";
+
   render();
 }
 
 function bayar(){
-  laporan.push("Transaksi: "+total);
+  if(total === 0) return;
+
+  laporan.unshift("Transaksi: Rp " + total);
   keranjang = [];
   total = 0;
+
   render();
 }
 
