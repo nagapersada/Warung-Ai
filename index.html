@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Warung Pintar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body style="font-family: Arial; padding:20px">
+
+<h1>Warung Pintar</h1>
+
+<h2>Produk</h2>
+<div id="produk"></div>
+
+<h2>Tambah Produk</h2>
+<input id="nama" placeholder="Nama"><br>
+<input id="harga" placeholder="Harga"><br>
+<input id="stok" placeholder="Stok"><br>
+<button onclick="tambahProduk()">Tambah</button>
+
+<h2>Keranjang</h2>
+<div id="keranjang"></div>
+<p id="total">Total: 0</p>
+<button onclick="bayar()">Bayar</button>
+
+<h2>Laporan</h2>
+<div id="laporan"></div>
+
+<script>
+let produk = [
+  {nama:"Mie Instan", harga:3000, stok:20},
+  {nama:"Kopi", harga:2000, stok:30}
+];
+
+let keranjang = [];
+let total = 0;
+let laporan = [];
+
+function render() {
+  document.getElementById("produk").innerHTML = "";
+  produk.forEach((p,i)=>{
+    document.getElementById("produk").innerHTML += 
+      p.nama+" - "+p.harga+" (stok:"+p.stok+") "+
+      "<button onclick='beli("+i+")'>Tambah</button><br>";
+  });
+
+  document.getElementById("keranjang").innerHTML = "";
+  keranjang.forEach(k=>{
+    document.getElementById("keranjang").innerHTML += k.nama+"<br>";
+  });
+
+  document.getElementById("total").innerText = "Total: "+total;
+
+  document.getElementById("laporan").innerHTML = "";
+  laporan.forEach(l=>{
+    document.getElementById("laporan").innerHTML += l+"<br>";
+  });
+}
+
+function beli(i){
+  if(produk[i].stok<=0) return;
+  produk[i].stok--;
+  keranjang.push(produk[i]);
+  total += produk[i].harga;
+  render();
+}
+
+function tambahProduk(){
+  let nama = document.getElementById("nama").value;
+  let harga = parseInt(document.getElementById("harga").value);
+  let stok = parseInt(document.getElementById("stok").value);
+
+  produk.push({nama,harga,stok});
+  render();
+}
+
+function bayar(){
+  laporan.push("Transaksi: "+total);
+  keranjang = [];
+  total = 0;
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
